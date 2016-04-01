@@ -33,9 +33,9 @@
 #include "variables.h" //loading variable setting
 
 //this is for servo z-probe
-#include <Servo.h>
+/*#include <Servo.h>
 Servo Zservo;
-bool zstate = false;
+bool zstate = false;*/
 
 void setup(){ 
   SERIAL_P.begin(BAUDRATE); //init printer com dont delete
@@ -43,7 +43,7 @@ void setup(){
   SERIAL_BT.begin(BAUDRATE); //init bt to printer
   
   myFlash.begin();  //image stored in lcd flash ic
-  Zservo.attach(9);
+  //Zservo.attach(9);
   
   myGLCD.InitLCD();
   myGLCD.clrScr();
@@ -60,7 +60,7 @@ void loop() {
   checkPrinter();
   }
 
-  if (SERIAL_P.readString()== F("zservo")|| Bmc.Touch()){
+/*  if (SERIAL_P.readString()== F("zservo")|| Bmc.Touch()){
     if(zstate==false){
       //Zservo.attach(9);
       Zservo.write(90);  //down pos
@@ -74,7 +74,7 @@ void loop() {
       //Zservo.detach();
       zstate=false;
     }
-  }
+  }*/
     
   if (ComSet==0){
     Bpr.Colors(RED,RED,NOFILL);
@@ -112,7 +112,7 @@ void setMvStep(int MvStep){
   } else {
     mvsval = 100;
   }
-  //  strMvc = dtostrf(mvsval,3,1,strcMv);
+    strMvc = dtostrf(mvsval,3,1,strcMv);
     myGLCD.setBackColor(BLACK);
     myGLCD.print(F("       "),140,210);
     myGLCD.setColor(GREEN);
@@ -227,7 +227,7 @@ void InitTouchInterface(){
      sendGcode("G1 E-"+strMvc+" F240");
      sendGcode(F("G90"));  
    } else if (Bsd.Touch()) {  // lister les fichiers sur la carte sd
-     PSdFilelist();
+     //PSdFilelist();
    } else if ( Fan.Toggle()){
        Fan.SetState(false);
        if (fanS) {
@@ -276,7 +276,7 @@ void serialEcho(int scom){ //bypass serial com
     }
   }
 }
-void boxSd(){
+/*void boxSd(){
   myGLCD.setColor(GREY);
   myGLCD.drawRoundRect(20,30,300,210);
 }
@@ -315,7 +315,7 @@ void PSdFilelist(){
         }
      }
      SERIAL_P.read(); //on vide serial buffer 
-}
+}*/
 void setStateDisplay(String dispstring){
     clearText(CENTER,225);
     myGLCD.print(dispstring,CENTER,225);    

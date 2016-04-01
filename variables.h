@@ -27,7 +27,6 @@
 //#define imagedatatype  unsigned short
 extern uint8_t SmallFont[];
 UTFT myGLCD(ITDB32S,38,39,40,41);
-//UTFT myGLCD(CTE32,25,26,27,28);
 UTouch  myTouch(6,5,4,3,2);
 SPIflash      myFlash(45);//45
 UTFT_SPIflash myFiles(&myGLCD,&myFlash);
