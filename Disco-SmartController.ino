@@ -51,16 +51,107 @@ void setup(){
   myTouch.InitTouch();
   myTouch.setPrecision(PREC_MEDIUM);
 
-  #include "interface.h" //loading customised interface var and function
-
+  TCHB.Coords(20,60,70,110);
+  BTB.Coords(90,60,140,110);
+  USBB.Coords(20,130,70,180);
+  SETB.Coords(90,130,140,180);
+  TCHB.Colors(GREEN,WHITE,NOFILL,SQUARED);
+  BTB.Colors(GREEN,WHITE,NOFILL,SQUARED);
+  USBB.Colors(GREEN,WHITE,NOFILL,SQUARED);
+  SETB.Colors(GREEN,WHITE,NOFILL,SQUARED);
+  BACK.Coords(0,219,20,239);
+  BACK.Colors(GREEN,WHITE,NOFILL,SQUARED);
 }
 
 void loop() { 
-  if (initcom){
+  /*if (initcom){
   checkPrinter();
+  }*/
+
+  switch(disp_pg){
+    case 0:
+      disp_HOM();
+    break;
+    case 1:
+      disp_TCH();
+    break;
+    case 2:
+      disp_BT();
+    break;
+    case 3:
+      disp_USB();
+    break;
+    case 4:
+      disp_SET();
+    break;
+    case 5:
+      disp_SD();
+    break;
   }
 
-/*  if (SERIAL_P.readString()== F("zservo")|| Bmc.Touch()){
+}  
+
+void disp_HOM(){  
+  if (loaded == false) {
+  myFiles.loadBitmap(4,160,45);
+  myFiles.loadBitmap(9,20,60);
+  myFiles.loadBitmap(6,90,130);
+  myFiles.loadBitmap(7,90,60);
+  myFiles.loadBitmap(8,20,130);
+  myGLCD.setColor(CYAN);
+  myGLCD.drawRoundRect(0,224,319,239);
+  myGLCD.print(F("Developped by Bloutix"),CENTER,225);
+  myGLCD.setColor(BLACK);
+  myGLCD.fillRect(0,0,319,10);
+  myGLCD.setBackColor(BLACK);
+  myGLCD.setColor(CYAN);
+  myGLCD.print(F("Disco SmartController"),CENTER,0);
+  loaded = true;
+  }
+  TCHB.ReDraw();
+  BTB.ReDraw();
+  USBB.ReDraw();
+  SETB.ReDraw();
+  if (TCHB.Touch()){
+    loaded = false;
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    disp_pg = 1;
+  } else if(BTB.Touch()){
+    loaded = false;
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    disp_pg = 2;
+  } else if(USBB.Touch()){
+    loaded = false;
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    disp_pg = 3;
+  } else if(SETB.Touch()){
+    loaded = false;
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    disp_pg = 4;
+  }
+}
+void disp_TCH(){
+  if (loaded == false) {
+  myFiles.loadBitmap(5,0,219);
+  #include "interface.h" //loading customised interface var and function
+  moveS.Unlock();
+  tempB.Unlock();
+  tempH.Unlock();
+  Print_Bar.Unlock();
+  moveS.SetStartingValue(lastMv);
+  tempB.SetStartingValue(lastTb);
+  tempH.SetStartingValue(lastHb);
+  moveS.Draw();
+  tempB.Draw();
+  tempH.Draw();
+  Print_Bar.Draw();
+  loaded = true;
+  }
+  /*  if (SERIAL_P.readString()== F("zservo")|| Bmc.Touch()){
     if(zstate==false){
       //Zservo.attach(9);
       Zservo.write(90);  //down pos
@@ -76,31 +167,153 @@ void loop() {
     }
   }*/
     
-  if (ComSet==0){
-    Bpr.Colors(RED,RED,NOFILL);
-    InitTouchInterface();
-  } else if(ComSet==1){
-    Bpr.Colors(BLUE,BLUE,NOFILL);
-      serialEcho(ComSet);
-  } else if(ComSet==2){
-    Bpr.Colors(WHITE,WHITE,NOFILL);
-      serialEcho(ComSet);
-  }
+  InitTouchInterface();
 
-  if(Bpr.Toggle()) { 
-      Bpr.SetState(false);
-      if( ComSet==0){ ComSet=1; myFiles.loadBitmap(2,0,0);} //activate usb
-      else if(ComSet==1){ ComSet=2; myFiles.loadBitmap(3,0,0);} //activate bt
-      else if(ComSet==2){ ComSet=0; myGLCD.print(F("          "),0,0);}
-      Bpr.Draw();
-  } else if (Bst.Touch()){  //arret urgence
+  if (Bst.Touch()){  //arret urgence
      sendGcode(F("M112"));
   }
-    if ((millis() - lastUpdate) >= 5000) { //affiche la température toute les 5 secondes
+    /*if ((millis() - lastUpdate) >= 5000) { //affiche la température toute les 5 secondes
       getTemperatures();
       lastUpdate=millis(); 
+    }*/
+  if (BACK.Touch()){
+    myGLCD.setBackColor(BLACK);
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    myGLCD.print(F("        "),0,0);
+    disp_pg =0;
+    loaded = false;
+  }
+}
+void disp_SET(){
+  if (loaded == false) {
+  myFiles.loadBitmap(5,0,219);//back btn
+  myGLCD.setBackColor(GREY);
+  myGLCD.setColor(BLUE);
+  myGLCD.print(F("Parametres"),CENTER,15);
+  loaded = true;
+  }
+  if (BACK.Touch()){
+    myGLCD.setBackColor(BLACK);
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    myGLCD.print(F("        "),0,0);
+    disp_pg =0;
+    loaded = false;
+  }
+}
+void disp_USB(){
+  if (loaded == false) {
+  myFiles.loadBitmap(2,0,0);
+  myFiles.loadBitmap(5,0,219);
+  myGLCD.setColor(GREY);
+  myGLCD.fillRect(50,105,270,125);
+  myGLCD.setColor(RED);
+  myGLCD.drawRoundRect(50,105,270,125);
+  myGLCD.setBackColor(GREY);
+  myGLCD.print(F("Controle USB en cours"),CENTER,110);
+  loaded =true;
+  }
+  
+  if (BACK.Touch()){
+    myGLCD.setBackColor(BLACK);
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    myGLCD.print(F("        "),0,0);
+    disp_pg =0;
+    loaded = false;
+  } else {
+    serialEcho(1);
+  }
+}
+void disp_BT(){
+  if (loaded == false) {
+  myFiles.loadBitmap(3,0,0);
+  myFiles.loadBitmap(5,0,219);
+  myGLCD.setColor(GREY);
+  myGLCD.fillRect(50,105,270,125);
+  myGLCD.setColor(BLUE);
+  myGLCD.drawRoundRect(50,105,270,125);
+  myGLCD.setBackColor(GREY);
+  myGLCD.print(F("Controle Bluetooth en cours"),CENTER,110);
+  loaded =true;
+  }
+  
+  if (BACK.Touch()){
+    myGLCD.setBackColor(BLACK);
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    myGLCD.print(F("        "),0,0);
+    disp_pg =0;
+    loaded = false;
+  } else {
+    serialEcho(2);
+  }
+}
+void disp_SD(){
+  if (loaded == false) {
+  myFiles.loadBitmap(5,0,219);
+  myGLCD.setBackColor(GREY);
+  myGLCD.setColor(BLUE);
+  myGLCD.print(F("Liste des fichiers sur la Carte SD"),CENTER,15);
+  PSdFilelist();
+  SDPTB.Coords(220,180,300,210);
+  SDPTB.Colors(CYAN,GREEN,FILL,SQUARED);
+  SDPTB.ReDraw();
+  UPB.Coords(260,50,300,90);
+  UPB.Colors(GREEN,RED,FILL,SQUARED);
+  UPB.ReDraw();
+  DNB.Coords(260,110,300,150);
+  DNB.Colors(GREEN,BLUE,FILL,SQUARED);
+  DNB.ReDraw();
+  myGLCD.setColor(BLUE);
+  myGLCD.print(F("IMPRIMER"),230,190);
+  for (byte i=0; i<file_cnt; i++){
+    if(i==0){
+      myGLCD.setColor(GREEN);
+      myGLCD.drawRect(45,(i*20)+38,190,(i*20)+52);
     }
-}  
+    myGLCD.setBackColor(GREY);
+    myGLCD.setColor(WHITE);
+    myGLCD.print(file[i],50,(i*20)+40);
+  }
+  loaded =true;
+  }
+  if(DNB.Touch()){
+    myGLCD.setColor(GREY);
+    myGLCD.drawRect(45,(selected*20)+38,190,(selected*20)+52);
+    selected++;
+    if(selected>file_cnt){selected=file_cnt;}
+    myGLCD.setColor(GREEN);
+    myGLCD.drawRect(45,(selected*20)+38,190,(selected*20)+52);
+    delay(50);
+  }else if(UPB.Touch()) {
+    myGLCD.setColor(GREY);
+    myGLCD.drawRect(45,(selected*20)+38,190,(selected*20)+52);
+    selected--;
+    if(selected<0){selected=0;}
+    myGLCD.setColor(GREEN);
+    myGLCD.drawRect(45,(selected*20)+38,190,(selected*20)+52);
+    delay(50);
+  }else if(SDPTB.Touch()){
+    sendGcode("M23 "+file[selected]);
+    memset(file,0,sizeof(file));
+    myGLCD.setBackColor(BLACK);
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    myGLCD.print(F("        "),0,0);
+    disp_pg=1;
+    loaded = false;
+  }
+  if (BACK.Touch()){
+    myGLCD.setBackColor(BLACK);
+    myGLCD.setColor(BLACK);
+    myGLCD.fillRect(0,10,319,239);
+    myGLCD.print(F("        "),0,0);
+    disp_pg =1;
+    loaded = false;
+  }
+}
 
 void setMvStep(int MvStep){
   if (MvStep == 1){
@@ -227,18 +440,21 @@ void InitTouchInterface(){
      sendGcode("G1 E-"+strMvc+" F240");
      sendGcode(F("G90"));  
    } else if (Bsd.Touch()) {  // lister les fichiers sur la carte sd
-     //PSdFilelist();
+      myGLCD.setColor(BLACK);
+      myGLCD.fillRect(0,10,319,239);
+      loaded= false;
+      disp_pg = 5;
    } else if ( Fan.Toggle()){
        Fan.SetState(false);
        if (fanS) {
         sendGcode(F("M908"));
         Fan.Colors(RED,RED,NOFILL);
-        Fan.Draw();
+        Fan.ReDraw();
         fanS = false;
        } else {
         sendGcode(F("M106 S255"));
         Fan.Colors(WHITE,WHITE,NOFILL);
-        Fan.Draw();
+        Fan.ReDraw();
         fanS = true;
        }
    } else if(Brk.Toggle()){
@@ -246,12 +462,12 @@ void InitTouchInterface(){
        if (!Brked) {
         sendGcode(F("M25"));
         Brk.Colors(RED,RED,NOFILL);
-        Brk.Draw();
+        Brk.ReDraw();
         Brked = true;
        } else {
         sendGcode(F("M24"));
         Brk.Colors(WHITE,WHITE,NOFILL);
-        Brk.Draw();
+        Brk.ReDraw();
         Brked = false;
        }
    }
@@ -276,52 +492,48 @@ void serialEcho(int scom){ //bypass serial com
     }
   }
 }
-/*void boxSd(){
-  myGLCD.setColor(GREY);
-  myGLCD.drawRoundRect(20,30,300,210);
-}
 void PSdFilelist(){
     bool startsd = false;
+    file_cnt = 0;
     String filename = "";
-    int file_cnt = 0;
-    char f_0[10] ="";
-    char f_1[10] ="";
-    char f_2[10] ="";
-    char f_3[10] ="";
-    char f_4[10]=""; 
-    char *file[] = {f_0,f_1,f_2,f_3,f_4};
-    
-     //SERIAL_P.println(F("M21"));
+     myGLCD.setColor(GREY);
+     myGLCD.fillRoundRect(20,30,300,210);
+      
+     SERIAL_P.read(); //on vide serial buffer
+     SERIAL_P.println(F("M21"));
+     SERIAL_P.read(); //on vide serial buffer
      SERIAL_P.println(F("M20"));
      while (SERIAL_P.available()==0) { }
-      myGLCD.setColor(GREY);
-      myGLCD.fillRoundRect(20,30,300,210);
      while (SERIAL_P.available()>0){
+        delay(10);
         filename = SERIAL_P.readStringUntil('\n');
         if (filename != F("End file list") && startsd==true) {  
           if(file_cnt < 5){ //if is GCODE file //(filename.endsWith(".G") || filename.endsWith(".g")) && 
-             filename.toCharArray(file[file_cnt],filename.length()+1);
-             myGLCD.setBackColor(GREY);
-             myGLCD.setColor(BLACK);
-             myGLCD.print(file[file_cnt],50,file_cnt*10);
+             //filename.toCharArray(file[file_cnt],filename.length()+1);
+             file[file_cnt] = filename;
              file_cnt++;
            }
         } else if(filename == F("End file list")){
+          myGLCD.setBackColor(GREY);
+          myGLCD.setColor(CYAN);
+          setStateDisplay(filename);
           startsd =false;
-          setStateDisplay(filename);
+          filename="";
         } else if (filename == F("Begin file list")) {
-          startsd = true;
+          myGLCD.setBackColor(GREY);
+          myGLCD.setColor(CYAN);
           setStateDisplay(filename);
+          startsd = true;
         }
      }
      SERIAL_P.read(); //on vide serial buffer 
-}*/
+}
 void setStateDisplay(String dispstring){
     clearText(CENTER,225);
     myGLCD.print(dispstring,CENTER,225);    
 }
 void clearText(int col, int line){
-    myGLCD.print(F("                                       "),col,line); 
+    myGLCD.print(F("                                  "),col,line); 
 }
 void sendGcode(String lineOfCode){
   SERIAL_P.println(lineOfCode);

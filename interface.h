@@ -25,10 +25,7 @@
  
 //Interface setting 
   myGLCD.setColor(CYAN);
-  myGLCD.drawRoundRect(0,224,319,239);
-  myGLCD.setBackColor(BLACK);
-  myGLCD.setColor(CYAN);
-  myGLCD.print(F("Bloutix Disco 200"),CENTER,0);
+  myGLCD.drawRoundRect(20,224,319,239);
   
   myFiles.loadBitmap(0,0,15);
   myFiles.loadBitmap(1,200,120);
@@ -39,17 +36,17 @@
   Rext.Colors(GREEN,WHITE,NOFILL,SQUARED);
   Fan.Coords(270,119,300,149);
   Fan.Colors(RED,WHITE,NOFILL,SQUARED);
-  Fan.Draw();
+  Fan.ReDraw();
   Bsd.Coords(200,154,230,184);
   Bsd.Colors(GREEN,WHITE,NOFILL,SQUARED);
   Bmc.Coords(270,154,300,184);
   Bmc.Colors(GREEN,WHITE,NOFILL,SQUARED);
   Bpr.Coords(200,189,230,219);
   Bpr.Colors(CYAN,WHITE,NOFILL,SQUARED);
-  Bpr.Draw();
+  Bpr.ReDraw();
   Brk.Coords(235,189,265,219);
   Brk.Colors(RED,WHITE,NOFILL,SQUARED);
-  Brk.Draw();
+  Brk.ReDraw();
   Bst.Coords(270,189,300,219);
   Bst.Colors(RED,WHITE,NOFILL,SQUARED);
 
@@ -81,21 +78,21 @@
   moveS.SetDirection(BTT);
   moveS.SetRange(1,4,1);
   moveS.SetStartingValue(1);
-  moveS.Draw();
+  //moveS.Draw();
   
   tempH.Coords(230,15,250,105);
   tempH.Colors(BLUE,BLACK,ROUNDED,NOFILL);
   tempH.SetDirection(BTT);
   tempH.SetRange(1,4,1);
   tempH.SetStartingValue(1);
-  tempH.Draw();
+  //tempH.Draw();
   
   tempB.Coords(260,15,280,105);
   tempB.Colors(RED,BLACK,ROUNDED,NOFILL);
   tempB.SetDirection(BTT);
   tempB.SetRange(1,4,1);
   tempB.SetStartingValue(1);
-  tempB.Draw();
+  //tempB.Draw();
 
   Print_Bar.Coords(309,0,319,220); // FIRST, must set coordinates before setting Range and optional starting value
   Print_Bar.Attributes(ROUNDED,FILL);  //
@@ -104,7 +101,7 @@
   Print_Bar.Percentages(80,50,0);
   Print_Bar.SetRange(0,100);                 // SECOND, Must be set after coordinates
   Print_Bar.SetStartingValue(0);                // THIRD (Optional, but must be set after range)
-  Print_Bar.Draw();
+  //Print_Bar.Draw();
   /*for (int i = 0; i <= 100; i++) // demo voltage
   {
     Print_Bar.SetValue(i);

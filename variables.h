@@ -48,12 +48,18 @@ Meter Print_Bar(&B,VERTICAL);
 #define SERIAL_BT Serial2   //port serie smartcontroller -> bt module
 #define BAUDRATE 115200
 
-int ComSet = 0;
+unsigned int disp_pg =0;
 long lastUpdate = 0;
 bool awaitingOK = false;
 bool initcom = true;
 bool fanS = true;
 bool Brked = false;
+bool loaded = false;
+
+//this is for SD file list
+int file_cnt = 0;
+String file[] = {"","","","",""};
+int selected = 0;
 
 char strcMv[15];
 float mvsval = 0.1; //desired mv step
@@ -62,7 +68,9 @@ String strMvc = "0.1";
 //var of slide control
 unsigned int lastTb,lastHb,lastMv;
 
+//define home button
+Box TCHB(&B), BTB(&B), USBB(&B), SETB(&B), BACK(&B), SDPTB(&B);
 //define all custom button
 Box XH(&B), YH(&B), ZH(&B), UB(&B), DB(&B), LB(&B), RB(&B), UZ(&B), DZ(&B);
 Box Eext(&B), Rext(&B), Fan(&B), Bsd(&B), Bpr(&B), Brk(&B), Bst(&B);
-Box Bmc(&B);
+Box Bmc(&B),UPB(&B),DNB(&B);
