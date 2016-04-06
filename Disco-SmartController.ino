@@ -51,16 +51,16 @@ void setup(){
   myTouch.InitTouch();
   myTouch.setPrecision(PREC_MEDIUM);
 
-  TCHB.Coords(20,60,70,110);
-  BTB.Coords(90,60,140,110);
-  USBB.Coords(20,130,70,180);
-  SETB.Coords(90,130,140,180);
+  TCHB.Coords(20,60,68,108);
+  BTB.Coords(90,60,138,108);
+  USBB.Coords(20,130,68,178);
+  SETB.Coords(90,130,138,178);
   TCHB.Colors(GREEN,WHITE,NOFILL,SQUARED);
   BTB.Colors(GREEN,WHITE,NOFILL,SQUARED);
   USBB.Colors(GREEN,WHITE,NOFILL,SQUARED);
   SETB.Colors(GREEN,WHITE,NOFILL,SQUARED);
-  BACK.Coords(0,219,20,239);
-  BACK.Colors(GREEN,WHITE,NOFILL,SQUARED);
+  BACK.Coords(0,220,20,239);
+  BACK.Colors(GREEN,BLACK,NOFILL,SQUARED);
 }
 
 void loop() { 
@@ -87,17 +87,18 @@ void loop() {
     case 5:
       disp_SD();
     break;
+    case 6:
+      disp_Mcode();
+    break;
   }
 
 }  
-
-void disp_HOM(){  
+//PAGES d'affichage
+void disp_Mcode(){  //afichage du clavier pour envoie de ligne de commande
+  
+}
+void disp_HOM(){  //affichage de l'écran d'accueil
   if (loaded == false) {
-  myFiles.loadBitmap(4,160,45);
-  myFiles.loadBitmap(9,20,60);
-  myFiles.loadBitmap(6,90,130);
-  myFiles.loadBitmap(7,90,60);
-  myFiles.loadBitmap(8,20,130);
   myGLCD.setColor(CYAN);
   myGLCD.drawRoundRect(0,224,319,239);
   myGLCD.print(F("Developped by Bloutix"),CENTER,225);
@@ -106,12 +107,18 @@ void disp_HOM(){
   myGLCD.setBackColor(BLACK);
   myGLCD.setColor(CYAN);
   myGLCD.print(F("Disco SmartController"),CENTER,0);
-  loaded = true;
-  }
   TCHB.ReDraw();
   BTB.ReDraw();
   USBB.ReDraw();
   SETB.ReDraw();
+  myFiles.loadBitmap(4,160,45);
+  myFiles.loadBitmap(9,20,60);
+  myFiles.loadBitmap(6,90,130);
+  myFiles.loadBitmap(7,90,60);
+  myFiles.loadBitmap(8,20,130);
+  loaded = true;
+  }
+
   if (TCHB.Touch()){
     loaded = false;
     myGLCD.setColor(BLACK);
@@ -134,10 +141,10 @@ void disp_HOM(){
     disp_pg = 4;
   }
 }
-void disp_TCH(){
+void disp_TCH(){  //affichage de l'interface de controle tactil
   if (loaded == false) {
-  myFiles.loadBitmap(5,0,219);
   #include "interface.h" //loading customised interface var and function
+  myFiles.loadBitmap(5,0,219);
   moveS.Unlock();
   tempB.Unlock();
   tempH.Unlock();
@@ -185,32 +192,156 @@ void disp_TCH(){
     loaded = false;
   }
 }
-void disp_SET(){
+void disp_SET(){  //affichage de la fenetre de parametrage
   if (loaded == false) {
-  myFiles.loadBitmap(5,0,219);//back btn
-  myGLCD.setBackColor(GREY);
-  myGLCD.setColor(BLUE);
-  myGLCD.print(F("Parametres"),CENTER,15);
-  loaded = true;
-  }
-  if (BACK.Touch()){
-    myGLCD.setBackColor(BLACK);
-    myGLCD.setColor(BLACK);
-    myGLCD.fillRect(0,10,319,239);
-    myGLCD.print(F("        "),0,0);
-    disp_pg =0;
-    loaded = false;
+        myGLCD.setColor(BLACK);
+        myGLCD.fillRect(0,10,319,239);
+        myGLCD.setBackColor(BLACK);
+        myGLCD.setColor(RED);
+        myGLCD.print(F("Page de configuration"),CENTER,15);
+        SDPTB.Coords(245,220,319,239);
+        SDPTB.Colors(CYAN,BLACK,FILL,SQUARED);
+        SDPTB.ReDraw();
+        myGLCD.setColor(WHITE);
+        myGLCD.print(F("Suivant"),250,224);
+        myFiles.loadBitmap(5,0,219);//back btn
+        Bt1.Coords(140,35,160,55);
+        Bt1.Colors(GREEN,BLACK,SQUARED,FILL);
+        Bt2.Coords(190,35,210,55);
+        Bt2.Colors(GREEN,BLACK,SQUARED,FILL);
+        Bt3.Coords(140,65,160,85);
+        Bt3.Colors(GREEN,BLACK,SQUARED,FILL);
+        Bt4.Coords(140,95,160,115);
+        Bt4.Colors(GREEN,BLACK,SQUARED,FILL);
+        Bt5.Coords(140,125,160,145);
+        Bt5.Colors(GREEN,BLACK,SQUARED,FILL);
+        Bt6.Coords(140,155,160,175);
+        Bt6.Colors(GREEN,BLACK,SQUARED,FILL);
+        sub_loaded = false;
+        loaded = true;
+      }
+  switch (sub_pg){
+    case 0: //pge lanques, bt, bed, dago, flash ic
+      if (sub_loaded == false) {
+          Bt1.ReDraw();
+          Bt2.ReDraw();
+          Bt3.ReDraw();
+          Bt4.ReDraw();
+          Bt5.ReDraw();
+          Bt6.ReDraw();
+          myGLCD.setColor(WHITE);
+          myGLCD.print(F("Langue:"),20,40);
+          myGLCD.print(F("FR"),120,40);
+          myGLCD.print(F("EN"),170,40);
+          myGLCD.print(F("Dagoma:"),20,70);
+          myGLCD.print(F("Bluetooth:"),20,100);
+          myGLCD.print(F("Lit Chauffant:"),20,130);
+          myGLCD.print(F("Flash IC:"),20,160);
+          //updispval(int val, int x, int y);
+        sub_loaded = true;
+      }
+        myRB.RadioButtons(Chkbox);
+        Bt3.Toggle();
+        Bt4.Toggle();
+        Bt5.Toggle();
+        Bt6.Toggle();
+        if(SDPTB.Touch()){
+          par0 = (Bt1.getState()) ? 1 : 11;
+          par0+= (Bt6.getState()) ? 0 : 100;
+          par1 = (Bt3.getState()) ? 1 : 0;
+          par1+= (Bt4.getState()) ? 10 : 0;
+          par1+= (Bt5.getState()) ? 100 : 0;
+        
+          myGLCD.setColor(BLACK);
+          myGLCD.fillRect(0,30,319,219);
+          sub_pg = 1;
+          sub_loaded = false;
+        } else if (BACK.Touch()){
+          myGLCD.setColor(BLACK);
+          myGLCD.fillRect(0,10,319,239);
+          disp_pg =0;
+          sub_loaded = false;
+          loaded = false;
+        }
+    break;
+    case 1: //vitesse com, sd files
+      if (sub_loaded == false) {
+          myGLCD.setColor(WHITE);
+          myGLCD.printNumI(par0,CENTER,225);
+        sub_loaded = true;
+      }
+        if(SDPTB.Touch()){
+          myGLCD.setColor(BLACK);
+          myGLCD.fillRect(0,30,319,219);
+          sub_pg = 2;
+          sub_loaded = false;
+        } else if (BACK.Touch()){
+          myGLCD.setColor(BLACK);
+          myGLCD.fillRect(0,30,319,219);
+          sub_pg =0;
+          sub_loaded = false;
+        }
+    break;
+    case 2: // temp and case sup 255°
+      if (sub_loaded == false) {
+
+        sub_loaded = true;
+      }
+        if(SDPTB.Touch()){
+          myGLCD.setColor(BLACK);
+          myGLCD.fillRect(0,30,319,219);
+          sub_pg = 3;
+          sub_loaded = false;
+        } else if (BACK.Touch()){
+          myGLCD.setColor(BLACK);
+          myGLCD.fillRect(0,30,319,219);
+          sub_pg =1;
+          sub_loaded = false;
+        }
+    break;
+    case 3: //resume and validate
+      if (sub_loaded == false) {
+        myGLCD.setColor(WHITE);
+        myGLCD.print(F("VALIDER"),250,224);
+        sub_loaded = true;
+      }
+        if(SDPTB.Touch()){
+          myGLCD.setColor(BLACK);
+          myGLCD.fillRect(0,30,319,219);
+          sub_pg = 4;
+          sub_loaded = false;
+        } else if (BACK.Touch()){
+          myGLCD.setColor(BLACK);
+          myGLCD.fillRect(0,30,319,219);
+          sub_pg =2;
+          sub_loaded = false;
+        }
+    break;
+    case 4: //do eeprom update
+      if (sub_loaded == false) {
+        myGLCD.setColor(WHITE);
+        myGLCD.print(F("ACCUEIL"),250,224);
+        myGLCD.print(F("Les parametres sont bien mis a jour."),CENTER,115);
+        sub_loaded = true;
+      }
+      if (SDPTB.Touch()){
+          myGLCD.setColor(BLACK);
+          myGLCD.fillRect(0,10,319,239);
+          sub_pg =0;
+          disp_pg = 0;
+          sub_loaded = false;
+          loaded = false;
+        }
+    break;
   }
 }
-void disp_USB(){
+void disp_USB(){  //affichage de la fenetre de communication usb
   if (loaded == false) {
   myFiles.loadBitmap(2,0,0);
   myFiles.loadBitmap(5,0,219);
-  myGLCD.setColor(GREY);
-  myGLCD.fillRect(50,105,270,125);
   myGLCD.setColor(RED);
   myGLCD.drawRoundRect(50,105,270,125);
-  myGLCD.setBackColor(GREY);
+  myGLCD.setBackColor(BLACK);
   myGLCD.print(F("Controle USB en cours"),CENTER,110);
   loaded =true;
   }
@@ -226,15 +357,13 @@ void disp_USB(){
     serialEcho(1);
   }
 }
-void disp_BT(){
+void disp_BT(){   //affichage de la fenetre de communication bluetooth
   if (loaded == false) {
   myFiles.loadBitmap(3,0,0);
   myFiles.loadBitmap(5,0,219);
-  myGLCD.setColor(GREY);
-  myGLCD.fillRect(50,105,270,125);
   myGLCD.setColor(BLUE);
   myGLCD.drawRoundRect(50,105,270,125);
-  myGLCD.setBackColor(GREY);
+  myGLCD.setBackColor(BLACK);
   myGLCD.print(F("Controle Bluetooth en cours"),CENTER,110);
   loaded =true;
   }
@@ -250,7 +379,7 @@ void disp_BT(){
     serialEcho(2);
   }
 }
-void disp_SD(){
+void disp_SD(){   //affichage de la liste des fichiers sur la carte sd
   if (loaded == false) {
   myFiles.loadBitmap(5,0,219);
   myGLCD.setBackColor(GREY);
@@ -267,7 +396,7 @@ void disp_SD(){
   DNB.Colors(GREEN,BLUE,FILL,SQUARED);
   DNB.ReDraw();
   myGLCD.setColor(BLUE);
-  myGLCD.print(F("IMPRIMER"),230,190);
+  myGLCD.print(F("VALIDER"),230,190);
   for (byte i=0; i<file_cnt; i++){
     if(i==0){
       myGLCD.setColor(GREEN);
@@ -315,7 +444,9 @@ void disp_SD(){
   }
 }
 
-void setMvStep(int MvStep){
+/*Fonctions principales*/
+//fonctions liées au SLIDER
+void setMvStep(int MvStep){ //fonction de parametrage des mouvements en mm
   if (MvStep == 1){
     mvsval = 0.1;
   } else if (MvStep == 2){
@@ -332,7 +463,7 @@ void setMvStep(int MvStep){
     myGLCD.print(F("Pas"),140,195);
     myGLCD.print(strMvc+"mm",140,208);
 }
-void setBedTemp(int temp){
+void setBedTemp(int temp){  //fonction de parametrage de la température du lit chauffant
   if (temp == 1){
     sendGcode(F("M140 S0"));
   } else if (temp == 2){
@@ -343,7 +474,7 @@ void setBedTemp(int temp){
     sendGcode(F("M140 S110"));
   }
 }
-void setHdTemp(int temp){
+void setHdTemp(int temp){   //fonction de parametrage de la température de la buse
     if (temp == 1){
     sendGcode(F("M109 S0"));
   } else if (temp == 2){
@@ -354,8 +485,26 @@ void setHdTemp(int temp){
     sendGcode(F("M109 S230"));
   }
 }
-//need to be improved to external file
-void checkPrinter(){
+
+//fonctions de communication
+void serialEcho(int scom){ //bypass serial com
+  if (scom==1){
+    if (SERIAL_U.available() > 0) {
+      SERIAL_P.write(SERIAL_U.read());
+    }
+    if (SERIAL_P.available() > 0) {
+      SERIAL_U.write(SERIAL_P.read());
+    }
+  } else if (scom==2){
+    if (SERIAL_BT.available() > 0) {
+      SERIAL_P.write(SERIAL_BT.read());
+    }
+    if (SERIAL_P.available() > 0) {
+      SERIAL_BT.write(SERIAL_P.read());
+    }
+  }
+}
+void checkPrinter(){    //fonction de controle de la communication DESACTIVE
   int r = 0;
   while (initcom){ //initialise la communication avec l'imprimante
     SERIAL_P.println(F("M105"));
@@ -383,7 +532,25 @@ void checkPrinter(){
     }
   }
 }
-void InitTouchInterface(){
+void sendGcode(String lineOfCode){    //envoie de Gcode avec attente de msg OK
+  SERIAL_P.println(lineOfCode);
+  awaitingOK = true;  
+  setStateDisplay(lineOfCode);
+  delay(10);
+  checkForOk();
+}
+void checkForOk() {   //fonction d'attente de MSG_OK
+  char c,lastc;
+   while (SERIAL_P.available()) {
+    c = SERIAL_P.read();    
+    if (lastc=='o' && c=='k') {awaitingOK=false; clearText(CENTER,225);}
+    lastc=c;
+    delay(1);     
+    }
+}
+
+//fonctions affichage et controle
+void InitTouchInterface(){  //variables et fonctions de l'interface tactile
     unsigned int Mvslide = moveS.Touch();
     unsigned int Tbslide = tempB.Touch();
     unsigned int Thslide = tempH.Touch();
@@ -470,29 +637,17 @@ void InitTouchInterface(){
         Brk.ReDraw();
         Brked = false;
        }
+   } else if(Bpr.Touch()){
+      sendGcode(F("M24"));
+   } else if (Bmc.Touch()){
+      loaded = false;
+      myGLCD.setColor(BLACK);
+      myGLCD.fillRect(0,10,319,239);
+      disp_pg = 6;
+      //myKB.SetupMobileKB(0, 0, 300, 230); //NEEDED TO WORK!
    }
-   //else if (Bmc.Touch()){
-     //myKB.SetupMobileKB(0, 0, 300, 230); //NEEDED TO WORK!
-   //}
 }
-void serialEcho(int scom){ //bypass serial com
-  if (scom==1){
-    if (SERIAL_U.available() > 0) {
-      SERIAL_P.write(SERIAL_U.read());
-    }
-    if (SERIAL_P.available() > 0) {
-      SERIAL_U.write(SERIAL_P.read());
-    }
-  } else if (scom==2){
-    if (SERIAL_BT.available() > 0) {
-      SERIAL_P.write(SERIAL_BT.read());
-    }
-    if (SERIAL_P.available() > 0) {
-      SERIAL_BT.write(SERIAL_P.read());
-    }
-  }
-}
-void PSdFilelist(){
+void PSdFilelist(){ //initialisation et liste les fichier de la carte sd
     bool startsd = false;
     file_cnt = 0;
     String filename = "";
@@ -528,30 +683,21 @@ void PSdFilelist(){
      }
      SERIAL_P.read(); //on vide serial buffer 
 }
-void setStateDisplay(String dispstring){
+void setStateDisplay(String dispstring){  //affichage d'information dans le cadre du bas de l'écran
     clearText(CENTER,225);
     myGLCD.print(dispstring,CENTER,225);    
 }
-void clearText(int col, int line){
+void clearText(int col, int line){    //lié à la fonction précédente
     myGLCD.print(F("                                  "),col,line); 
 }
-void sendGcode(String lineOfCode){
-  SERIAL_P.println(lineOfCode);
-  awaitingOK = true;  
-  setStateDisplay(lineOfCode);
-  delay(10);
-  checkForOk();
+void updispval(int val, int x, int y){   //affichage des valeur dynamique de reglage
+  myGLCD.setBackColor(BLACK);
+  myGLCD.setColor(WHITE);
+  myGLCD.printNumI(val,x,y);
 }
-void checkForOk() {
-  char c,lastc;
-   while (SERIAL_P.available()) {
-    c = SERIAL_P.read();    
-    if (lastc=='o' && c=='k') {awaitingOK=false; clearText(CENTER,225);}
-    lastc=c;
-    delay(1);     
-    }
-}
-void getTemperatures() {
+
+//fonctions affichage de valeurs dynamiques/cycliques
+void getTemperatures() {    //fonction affichage des température
       SERIAL_P.println(F("M105"));
       while (SERIAL_P.available()==0) { }
      if( String strTemps = SERIAL_P.readString()){
@@ -583,3 +729,26 @@ void getTemperatures() {
             d=c;
             }
 }
+void getPrintState(){ //affiche le pourcentage, le temps estimé de l'impression
+  //M31 echo:54 min, 38 sec //récupère le temps écoulé (reply)
+  //M27 SD printing byte 2134/235422 récupère le numéro de ligne en cours (reply)
+  //M26 Filename S2134 imprime depuis la ligne x du fichier en byte  (cmd with ok reply)
+}
+
+//fonctions de pramétrage
+//arduino mega eeprom = 4kb or maybe must to use flash ic for storing data
+void bTos(byte par, byte pg){ 
+  switch(pg){
+    case 0:
+      
+    break;
+    case 1:
+    break;
+    case 2:
+    break;
+  }
+}
+void getSet(){
+  
+}
+

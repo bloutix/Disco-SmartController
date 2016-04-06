@@ -43,18 +43,35 @@ Slider tempB(&B,VERTICAL);
 
 Meter Print_Bar(&B,VERTICAL);
 
+//btn for setting
+Box Bt1(&B),Bt2(&B),Bt3(&B),Bt4(&B),Bt5(&B),Bt6(&B);
+Box * Chkbox[] = {&Bt1, &Bt2};
+Radio myRB;
+//var for setting
+byte par0 = 1;
+byte par1 = 111;
+byte par2 = 55;
+byte par3 = 185;
+byte par4 = 210;
+byte par5 = 230;
+byte par6 = 60;
+byte par7 = 90;
+byte par8 = 110;
+
 #define SERIAL_U Serial
 #define SERIAL_P Serial1   //port serie smartcontroller -> printer
 #define SERIAL_BT Serial2   //port serie smartcontroller -> bt module
 #define BAUDRATE 115200
 
-unsigned int disp_pg =0;
+byte disp_pg =0;
+byte sub_pg = 0;
 long lastUpdate = 0;
 bool awaitingOK = false;
 bool initcom = true;
 bool fanS = true;
 bool Brked = false;
 bool loaded = false;
+bool sub_loaded = false;
 
 //this is for SD file list
 int file_cnt = 0;
