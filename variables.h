@@ -48,16 +48,12 @@ Box Bt1(&B),Bt2(&B),Bt3(&B),Bt4(&B),Bt5(&B),Bt6(&B);
 Box * Chkbox[] = {&Bt1, &Bt2};
 Radio myRB;
 //var for setting
-byte par0 = 1;
-byte par1 = 111;
-byte par2 = 55;
-byte par3 = 185;
-byte par4 = 210;
-byte par5 = 230;
-byte par6 = 60;
-byte par7 = 90;
-byte par8 = 110;
-
+byte addr[] = {B11011110,B00000101,185,210,230,60,90,110};
+byte par1 =1;
+byte bps = 1;
+bool chg[2] = {false, false};
+int lval[2] = {0,0};
+  
 #define SERIAL_U Serial
 #define SERIAL_P Serial1   //port serie smartcontroller -> printer
 #define SERIAL_BT Serial2   //port serie smartcontroller -> bt module

@@ -200,10 +200,7 @@ void disp_SET(){  //affichage de la fenetre de parametrage
         myGLCD.setColor(RED);
         myGLCD.print(F("Page de configuration"),CENTER,15);
         SDPTB.Coords(245,220,319,239);
-        SDPTB.Colors(CYAN,BLACK,FILL,SQUARED);
-        SDPTB.ReDraw();
-        myGLCD.setColor(WHITE);
-        myGLCD.print(F("Suivant"),250,224);
+        SDPTB.Colors(BLACK,FILL,SQUARED);
         myFiles.loadBitmap(5,0,219);//back btn
         sub_loaded = false;
         loaded = true;
@@ -211,7 +208,9 @@ void disp_SET(){  //affichage de la fenetre de parametrage
   switch (sub_pg){
     case 0: //pge lanques, bt, bed, dago, flash ic
       if (sub_loaded == false) {
-          BtsCoLords(0);
+          rstBtn(0);
+          SDPTB.Text("Suivant",WHITE,Small);
+          SDPTB.ReDraw();
           myGLCD.setColor(WHITE);
           myGLCD.print(F("Langue:"),20,40);
           myGLCD.print(F("FR"),120,40);
@@ -220,7 +219,6 @@ void disp_SET(){  //affichage de la fenetre de parametrage
           myGLCD.print(F("Bluetooth:"),20,100);
           myGLCD.print(F("Lit Chauffant:"),20,130);
           myGLCD.print(F("Flash IC:"),20,160);
-          //updispval(int val, int x, int y);
         sub_loaded = true;
       }
         myRB.RadioButtons(Chkbox);
@@ -229,11 +227,11 @@ void disp_SET(){  //affichage de la fenetre de parametrage
         Bt5.Toggle();
         Bt6.Toggle();
         if(SDPTB.Touch()){
-          bitWrite(par0,0,((Bt1.getState()) ? 0 : 1)); //langue FR/EN
-          bitWrite(par0,4,((Bt3.getState()) ? 1 : 0)); //Marlin FW Dagoma / !Dagoma
-          bitWrite(par0,1,((Bt4.getState()) ? 1 : 0)); //Bluetooth
-          bitWrite(par0,2,((Bt5.getState()) ? 1 : 0)); //BED
-		  bitWrite(par0,3,((Bt6.getState()) ? 1 : 0)); //Flash IC 
+          bitWrite(addr[0],0,((Bt1.getState()) ? 0 : 1)); //langue FR/EN
+          bitWrite(addr[0],4,((Bt3.getState()) ? 1 : 0)); //Marlin FW Dagoma / !Dagoma
+          bitWrite(addr[0],1,((Bt4.getState()) ? 1 : 0)); //Bluetooth
+          bitWrite(addr[0],2,((Bt5.getState()) ? 1 : 0)); //BED
+          bitWrite(addr[0],3,((Bt6.getState()) ? 1 : 0)); //Flash IC 
         
           myGLCD.setColor(BLACK);
           myGLCD.fillRect(0,30,319,219);
@@ -249,34 +247,48 @@ void disp_SET(){  //affichage de la fenetre de parametrage
     break;
     case 1: //vitesse com, sd files
       if (sub_loaded == false) {
-			byte bps = 1;
-		  BtsCoLords(1);
-          myGLCD.setColor(WHITE);
-		  myGLCD.print(F("Vitesse de communication"),20,40);
-		  myGLCD.print(F("Nb max fichier SD:"),20,70);
-		  myGLCD.print(F("TFT SD:"),20,100);
-		  myGLCD.print(F("Dual Extruder:"),20,130);
-        sub_loaded = true;
+      rstBtn(1);
+      SDPTB.Text("Suivant",WHITE,Small);
+      SDPTB.ReDraw();
+      myGLCD.setColor(WHITE);
+      myGLCD.print(F("Vitesse de communication"),20,40);
+      myGLCD.print(F("Nb max fichier SD:"),20,100);
+      myGLCD.print(F("TFT SD:"),20,130);
+      myGLCD.print(F("Dual Extruder:"),20,160);
+      bps = addr[0]>>5;
+      par1 = (addr[1]<<3);
+      par1 = par1>>3;
+      myGLCD.printNumI(par1,170,100, 0);
+      String strval = spdVal(bps);
+      myGLCD.print(strval,100,70);
+      sub_loaded = true;
       }
-		if (Bt1.Touch()){
-			if(bps>1)
-				bps--;
-		} else if(Bt2.Touch()){
-			if(bps<6)
-				bps++;
-		} else if(Bt3.Touch()){
-			if(par1 > 1)
-				par1--;
-		} else if(Bt4.Touch()){
-			if(par1 < 25)
-				par1++;
-		}
-		Bt5.Toggle();
+    if (Bt1.Touch()){
+        delay(30);
+      if(bps>1)
+        bps--;
+    } else if(Bt2.Touch()){
+      delay(30);
+      if(bps<6)
+        bps++;
+    } else if(Bt3.Touch()){
+      delay(30);
+      if(par1 > 1)
+        par1--;
+    } else if(Bt4.Touch()){
+        delay(30);
+      if(par1 < 25)
+        par1++;
+    }
+        updispval(par1,170,100, 0);
+        updispval(bps,100,70, 1);
+        Bt5.Toggle();
         Bt6.Toggle();
         if(SDPTB.Touch()){
-			speed2byte(bps);// ecrit comspeed dans le byte 0
-			bitWrite(par1,5,((Bt5.getState()) ? 1 : 0)); //TFT SD
-			bitWrite(par1,7,((Bt6.getState()) ? 1 : 0)); //DUAl EXTRUDER
+      speed2byte(bps);// ecrit comspeed dans le byte 0
+      sdf2byte(par1); //ecrit nb sd file dans byte 1
+      bitWrite(addr[1],5,((Bt5.getState()) ? 1 : 0)); //TFT SD
+      bitWrite(addr[1],7,((Bt6.getState()) ? 1 : 0)); //DUAl EXTRUDER
           myGLCD.setColor(BLACK);
           myGLCD.fillRect(0,30,319,219);
           sub_pg = 2;
@@ -290,9 +302,19 @@ void disp_SET(){  //affichage de la fenetre de parametrage
     break;
     case 2: // temp and case sup 255°
       if (sub_loaded == false) {
-
+        rstBtn(2);
+        myGLCD.setColor(WHITE);
+        myGLCD.print(F("Buse > 255~ ?"),20,40);
+        myGLCD.print(F("Temperatures de la Buse"),20,70);
+        myGLCD.print(F("T1"),40,80);myGLCD.print(F("T2"),120,80);myGLCD.print(F("T3"),200,80);
+        myGLCD.print(F("Temperatures du lit chauffant"),20,140);
+        myGLCD.print(F("T1"),40,150);myGLCD.print(F("T2"),120,150);myGLCD.print(F("T3"),200,150);
+        SDPTB.Text("Suivant",WHITE,Small);
+        SDPTB.ReDraw();
         sub_loaded = true;
       }
+        (Bt1.Toggle())? bitWrite(addr[1],6,1):bitWrite(addr[1],6,0);
+        
         if(SDPTB.Touch()){
           myGLCD.setColor(BLACK);
           myGLCD.fillRect(0,30,319,219);
@@ -307,8 +329,9 @@ void disp_SET(){  //affichage de la fenetre de parametrage
     break;
     case 3: //resume and validate
       if (sub_loaded == false) {
-        myGLCD.setColor(WHITE);
-        myGLCD.print(F("VALIDER"),250,224);
+        myGLCD.setColor(BLACK);
+        SDPTB.Text("VALIDER",WHITE,Small);
+        SDPTB.ReDraw();
         sub_loaded = true;
       }
         if(SDPTB.Touch()){
@@ -319,20 +342,26 @@ void disp_SET(){  //affichage de la fenetre de parametrage
         } else if (BACK.Touch()){
           myGLCD.setColor(BLACK);
           myGLCD.fillRect(0,30,319,219);
+          SDPTB.Text("Suivant",WHITE,Small);
+          SDPTB.ReDraw();
           sub_pg =2;
           sub_loaded = false;
         }
     break;
     case 4: //do eeprom update
       if (sub_loaded == false) {
+        SDPTB.Text("ACCUEIL",WHITE,Small);
+        SDPTB.ReDraw();
         myGLCD.setColor(WHITE);
-        myGLCD.print(F("ACCUEIL"),250,224);
         myGLCD.print(F("Les parametres sont bien mis a jour."),CENTER,115);
+        myGLCD.setColor(BLACK);
+        myGLCD.fillRect(0,220,30,239);
         sub_loaded = true;
       }
       if (SDPTB.Touch()){
           myGLCD.setColor(BLACK);
           myGLCD.fillRect(0,10,319,239);
+          SDPTB.Text("",WHITE,Small);
           sub_pg =0;
           disp_pg = 0;
           sub_loaded = false;
@@ -696,11 +725,6 @@ void setStateDisplay(String dispstring){  //affichage d'information dans le cadr
 void clearText(int col, int line){    //lié à la fonction précédente
     myGLCD.print(F("                                  "),col,line); 
 }
-void updispval(int val, int x, int y){   //affichage des valeur dynamique de reglage
-  myGLCD.setBackColor(BLACK);
-  myGLCD.setColor(WHITE);
-  myGLCD.printNumI(val,x,y);
-}
 
 //fonctions affichage de valeurs dynamiques/cycliques
 void getTemperatures() {    //fonction affichage des température
@@ -743,59 +767,95 @@ void getPrintState(){ //affiche le pourcentage, le temps estimé de l'impression
 
 //fonctions de pramétrage
 //arduino mega eeprom = 4kb or maybe must to use flash ic for storing data
-void BtsCoLords(byte pg){		//reset coords of btn for saving SRAM
-	switch(pg){
-		case 0:
-			Bt1.Coords(140,35,160,55); Bt1.Colors(GREEN,BLACK,SQUARED,FILL); Bt1.ReDraw();
-			Bt2.Coords(190,35,210,55); Bt2.Colors(GREEN,BLACK,SQUARED,FILL); Bt2.ReDraw();
-			Bt3.Coords(140,65,160,85); Bt3.Colors(GREEN,BLACK,SQUARED,FILL); Bt3.ReDraw();
-			Bt4.Coords(140,95,160,115); Bt4.Colors(GREEN,BLACK,SQUARED,FILL); Bt4.ReDraw();
-			Bt5.Coords(140,125,160,145); Bt5.Colors(GREEN,BLACK,SQUARED,FILL); Bt5.ReDraw();
-			Bt6.Coords(140,155,160,175); Bt6.Colors(GREEN,BLACK,SQUARED,FILL); Bt6.ReDraw();
-		break;
-		case 1:
-			Bt1.Coords(100,35,120,55); Bt1.Colors(GREEN,BLUE,SQUARED,FILL); Bt1.ReDraw();
-			Bt2.Coords(140,35,160,55); Bt2.Colors(GREEN,RED,SQUARED,FILL); Bt2.ReDraw();
-			Bt3.Coords(100,65,120,85);  Bt3.Colors(GREEN,BLUE,SQUARED,FILL); Bt3.ReDraw();
-			Bt4.Coords(140,65,160,85); Bt4.Colors(GREEN,RED,SQUARED,FILL); Bt4.ReDraw();
-			Bt5.Coords(140,95,160,115); Bt5.Colors(GREEN,BLACK,SQUARED,FILL); Bt5.ReDraw();
-			Bt6.Coords(140,125,260,175); Bt6.Colors(GREEN,BLACK,SQUARED,FILL); Bt6.ReDraw();
-		break;
-		case 2: 
-			Bt1.Coords(140,35,160,55); Bt1.Colors(GREEN,BLACK,SQUARED,FILL); Bt1.ReDraw();
-			Bt2.Coords(190,35,210,55); Bt2.Colors(GREEN,BLACK,SQUARED,FILL); Bt2.ReDraw();
-			Bt3.Coords(140,65,160,85); Bt3.Colors(GREEN,BLACK,SQUARED,FILL); Bt3.ReDraw();
-			Bt4.Coords(140,95,160,115); Bt4.Colors(GREEN,BLACK,SQUARED,FILL); Bt4.ReDraw();
-			Bt5.Coords(140,125,160,145); Bt5.Colors(GREEN,BLACK,SQUARED,FILL); Bt5.ReDraw();
-			Bt6.Coords(140,155,160,175); Bt6.Colors(GREEN,BLACK,SQUARED,FILL); Bt6.ReDraw();
-		break;
-		case 3:
-			Bt1.Coords(140,35,160,55); Bt1.Colors(GREEN,BLACK,SQUARED,FILL); Bt1.ReDraw();
-			Bt2.Coords(190,35,210,55); Bt2.Colors(GREEN,BLACK,SQUARED,FILL); Bt2.ReDraw();
-			Bt3.Coords(140,65,160,85); Bt3.Colors(GREEN,BLACK,SQUARED,FILL); Bt3.ReDraw();
-			Bt4.Coords(140,95,160,115); Bt4.Colors(GREEN,BLACK,SQUARED,FILL); Bt4.ReDraw();
-			Bt5.Coords(140,125,160,145); Bt5.Colors(GREEN,BLACK,SQUARED,FILL); Bt5.ReDraw();
-			Bt6.Coords(140,155,160,175); Bt6.Colors(GREEN,BLACK,SQUARED,FILL); Bt6.ReDraw();
-		break;
-	}
+void updispval(int val, int x, int y, byte nset){   //affichage des valeur dynamique de reglage
+  
+  switch(nset){
+    case 0:   //sd files int value is val to print
+    int val2;
+      val2 = val;
+        if(val!=lval[0]){
+          lval[0]=val;
+          chg[0] = true;
+        }
+        if(chg[0]){
+          myGLCD.setBackColor(WHITE);
+          myGLCD.setColor(BLACK);
+          myGLCD.print(F("   "),x,y);
+          myGLCD.printNumI(val2,x,y);
+          chg[0] = false;
+        }
+    break;
+    case 1: //comspeed int value is converted val to print
+      if(val!=lval[1]){
+          lval[1]=val;
+          chg[1] = true;
+        }
+        if(chg[1]){
+          myGLCD.setBackColor(WHITE);
+          myGLCD.setColor(BLACK);
+          myGLCD.print(F("      "),x,y);
+          String strval = spdVal(val);
+          myGLCD.print(strval,x,y);
+          chg[1] = false;
+        }
+    break;
+
+  }
+
 }
-void speed2byte(byte val){			//détermine les valeurs des bytes pour le parametre ComSpeed
-			bitWrite(par0,5,bitRead(val,0)); //comspeed
-			bitWrite(par0,6,bitRead(val,1)); //comspeed 
-			bitWrite(par0,7,bitRead(val,2)); //comspeed 
+String spdVal(byte val){
+  String valb;
+  if(val==1) valb="9600";
+    if(val==2) valb="14400";
+    if(val==3) valb="19200";
+    if(val==4) valb="38400";
+    if(val==5) valb="57600";
+    if(val==6) valb="115200";
+  return valb;
 }
-void bTos(byte par, byte pg){ 
+void rstBtn(byte pg){   //reset btn  for saving SRAM
   switch(pg){
     case 0:
-      
+      Bt1.SetState(bitRead(addr[0],0));Bt2.SetState((bitRead(addr[0],0))?1:0);Bt3.SetState(bitRead(addr[0],4));
+      Bt4.SetState(bitRead(addr[0],1));Bt5.SetState(bitRead(addr[0],2));Bt6.SetState(bitRead(addr[0],3));
+      Bt1.Coords(140,35,160,55); Bt1.Colors(GREEN,BLACK,SQUARED,FILL); Bt1.Text("", BLACK,Big); Bt1.ReDraw();
+      Bt2.Coords(190,35,210,55); Bt2.Colors(GREEN,BLACK,SQUARED,FILL); Bt2.Text("", BLACK,Big); Bt2.ReDraw();
+      Bt3.Coords(140,65,160,85); Bt3.Colors(GREEN,BLACK,SQUARED,FILL); Bt3.Text("", BLACK,Big); Bt3.ReDraw();
+      Bt4.Coords(140,95,160,115); Bt4.Colors(GREEN,BLACK,SQUARED,FILL); Bt4.Text("", BLACK,Big); Bt4.ReDraw();
+      Bt5.Coords(140,125,160,145); Bt5.Colors(GREEN,BLACK,SQUARED,FILL); Bt5.ReDraw();
+      Bt6.Coords(140,155,160,175); Bt6.Colors(GREEN,BLACK,SQUARED,FILL); Bt6.ReDraw();
     break;
     case 1:
+      Bt5.SetState(bitRead(addr[1],5));Bt6.SetState(bitRead(addr[1],7));
+      Bt1.Coords(220,35,240,55); Bt1.Colors(RED,BLACK,SQUARED,FILL); Bt1.SetState(false); Bt1.Text("-", WHITE,Big); Bt1.ReDraw();
+      Bt2.Coords(260,35,280,55); Bt2.Colors(BLUE,BLACK,SQUARED,FILL); Bt2.SetState(false); Bt2.Text("+", WHITE,Big); Bt2.ReDraw();
+      Bt3.Coords(220,95,240,115); Bt3.Colors(RED,BLACK,SQUARED,FILL); Bt3.SetState(false); Bt3.Text("-", WHITE,Big); Bt3.ReDraw();
+      Bt4.Coords(260,95,280,115); Bt4.Colors(BLUE,BLACK,SQUARED,FILL); Bt4.SetState(false); Bt4.Text("+", WHITE,Big); Bt4.ReDraw();
+      Bt5.Coords(220,125,240,145); Bt5.Colors(GREEN,BLACK,SQUARED,FILL); Bt5.ReDraw();
+      Bt6.Coords(220,155,240,175); Bt6.Colors(GREEN,BLACK,SQUARED,FILL); Bt6.ReDraw();
     break;
-    case 2:
+    case 2: 
+      Bt1.SetState(bitRead(addr[1],6));
+      Bt1.Coords(140,35,160,55); Bt1.Colors(GREEN,BLACK,SQUARED,FILL);Bt1.Text("", WHITE,Big); Bt1.ReDraw();
+      Bt2.Coords(280,80,300,100); Bt2.Colors(RED,BLACK,SQUARED,FILL); Bt2.SetState(false); Bt2.Text("-", WHITE,Big); Bt2.ReDraw();
+      Bt3.Coords(280,140,300,160); Bt3.Colors(BLUE,BLACK,SQUARED,FILL); Bt3.SetState(false); Bt3.Text("+", WHITE,Big);Bt3.ReDraw();
+      //Bt4.Coords(140,95,160,115); Bt4.Colors(GREEN,BLACK,SQUARED,FILL); Bt4.ReDraw();
+      //Bt5.Coords(140,125,160,145); Bt5.Colors(GREEN,BLACK,SQUARED,FILL); Bt5.ReDraw();
+      //Bt6.Coords(140,155,160,175); Bt6.Colors(GREEN,BLACK,SQUARED,FILL); Bt6.ReDraw();
     break;
   }
 }
-void getSet(){
-  
+void speed2byte(byte val){      //détermine les valeurs des bits pour le parametre ComSpeed
+      bitWrite(addr[0],5,bitRead(val,0)); //comspeed
+      bitWrite(addr[0],6,bitRead(val,1)); //comspeed 
+      bitWrite(addr[0],7,bitRead(val,2)); //comspeed 
+}
+void sdf2byte(byte val){        //determine la valeur des bits pour le nb files sd
+      bitWrite(addr[1],0,bitRead(val,0)); 
+      bitWrite(addr[1],1,bitRead(val,1)); 
+      bitWrite(addr[1],2,bitRead(val,2));
+      bitWrite(addr[1],3,bitRead(val,3));
+      bitWrite(addr[1],4,bitRead(val,4));
+      
 }
 
