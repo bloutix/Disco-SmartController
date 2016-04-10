@@ -34,7 +34,7 @@ UTFT_SPIflash myFiles(&myGLCD,&myFlash);
 // Not touch is for TFT_extensionV2 button lib
 Base B(&myGLCD,&myTouch); // Base class, NEEDED!!!
 
-//MobileKeyboard myKB(&B);
+MobileKeyboard myKB(&B);
 
 //initialize slider
 Slider moveS(&B,VERTICAL);
@@ -47,17 +47,29 @@ Meter Print_Bar(&B,VERTICAL);
 Box Bt1(&B),Bt2(&B),Bt3(&B),Bt4(&B),Bt5(&B),Bt6(&B);
 Box * Chkbox[] = {&Bt1, &Bt2};
 Radio myRB;
+
+//dont touch this bloc
 //var for setting
-byte addr[] = {B11011110,B00000101,185,210,230,60,90,110};
+byte addr[8] = {B11011110,B00000101,185,210,230,60,90,110}; //dont touch this
 byte par1 =1;
 byte bps = 1;
 bool chg[2] = {false, false};
 int lval[2] = {0,0};
-  
+int param_cnt=5;
+int ln = 0;
+int col = 0;
+int mult = 1;  
+//dont touch this bloc
+
 #define SERIAL_U Serial
 #define SERIAL_P Serial1   //port serie smartcontroller -> printer
 #define SERIAL_BT Serial2   //port serie smartcontroller -> bt module
-#define BAUDRATE 115200
+//#define BAUDRATE 115200
+bool autoBT = false;
+bool autoUSB = false;
+
+//pas encore implemente sécurité en cas de coupure électrique ou autre incident
+long lastByte = 0;
 
 byte disp_pg =0;
 byte sub_pg = 0;
@@ -71,7 +83,7 @@ bool sub_loaded = false;
 
 //this is for SD file list
 int file_cnt = 0;
-String file[] = {"","","","",""};
+String file[]= {"","","","","","","","","","","","","","","","","","","","","","","","",""};
 int selected = 0;
 
 char strcMv[15];
