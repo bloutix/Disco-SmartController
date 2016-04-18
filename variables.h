@@ -54,11 +54,11 @@ byte addr[8] = {B11011110,B00000101,185,210,230,60,90,110}; //dont touch this
 byte par1 =1;
 byte bps = 1;
 bool chg[2] = {false, false};
-int lval[2] = {0,0};
-int param_cnt=5;
-int ln = 0;
-int col = 0;
-int mult = 1;  
+unsigned int lval[2] = {0,0};
+unsigned int param_cnt=5;
+unsigned int ln = 0;
+unsigned int col = 0;
+unsigned int mult = 1;  
 //dont touch this bloc
 
 #define SERIAL_U Serial
@@ -67,13 +67,14 @@ int mult = 1;
 //#define BAUDRATE 115200
 bool autoBT = false;
 bool autoUSB = false;
-
+bool waitPrinting=false;
+bool isSDPrinting=false;
 //pas encore implemente sécurité en cas de coupure électrique ou autre incident
-long lastByte = 0;
+unsigned long lastByte = 0;
 
 byte disp_pg =0;
 byte sub_pg = 0;
-long lastUpdate = 0;
+unsigned long lastUpdate = 0;
 bool awaitingOK = false;
 bool initcom = true;
 bool fanS = true;
@@ -82,9 +83,9 @@ bool loaded = false;
 bool sub_loaded = false;
 
 //this is for SD file list
-int file_cnt = 0;
+unsigned int file_cnt = 0;
 String file[]= {"","","","","","","","","","","","","","","","","","","","","","","","",""};
-int selected = 0;
+unsigned int selected = 0;
 
 char strcMv[15];
 float mvsval = 0.1; //desired mv step
