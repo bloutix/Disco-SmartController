@@ -362,7 +362,7 @@ void disp_SET(){  //affichage de la fenetre de parametrage
         myGLCD.setColor(GREY);myGLCD.drawRect(100,95,150,115);myGLCD.drawRect(180,95,230,115);
         myGLCD.drawRect(20,165,70,185);myGLCD.drawRect(100,165,150,185);myGLCD.drawRect(180,165,230,185);
         myGLCD.setColor(WHITE);
-        myGLCD.print(F("Buse > 255~C ?"),20,40);
+        myGLCD.print(F("Buse > 255$C ?"),20,40);
         myGLCD.print(F("Temperatures de la Buse"),20,70);
         myGLCD.print(F("T1"),40,80);myGLCD.print(F("T2"),120,80);myGLCD.print(F("T3"),200,80);
         myGLCD.print(F("Temperatures du lit chauffant"),20,140);
@@ -798,9 +798,9 @@ void PSdFilelist(){ //initialisation et liste les fichier de la carte sd
      myGLCD.setColor(GREY);
      myGLCD.fillRoundRect(20,30,300,210);
       
-     SERIAL_P.read(); //on vide serial buffer
+     //SERIAL_P.read(); //on vide serial buffer
      SERIAL_P.println(code(1));
-     SERIAL_P.read(); //on vide serial buffer
+     //SERIAL_P.read(); //on vide serial buffer
      SERIAL_P.println(code(0));
      while (SERIAL_P.available()==0) { }
      while (SERIAL_P.available()>0){
@@ -825,7 +825,7 @@ void PSdFilelist(){ //initialisation et liste les fichier de la carte sd
           startsd = true;
         }
      }
-     SERIAL_P.read(); //on vide serial buffer 
+     //SERIAL_P.read(); //on vide serial buffer 
 }
 void setStateDisplay(String dispstring){  //affichage d'information dans le cadre du bas de l'écran
     clearText(20,225);
@@ -865,9 +865,9 @@ void getTemperatures() {    //fonction affichage des température
             myGLCD.setColor(BLACK);
             myGLCD.fillRect(0,190,120,219);
             myGLCD.setColor(RED);
-            myGLCD.print("Lit "+c+"/"+d+"~C",0,195);
+            myGLCD.print("Lit "+c+"/"+d+"$C",0,195);
             myGLCD.setColor(BLUE);
-            myGLCD.print("Buse "+a+"/"+b+"~C",0,210);
+            myGLCD.print("Buse "+a+"/"+b+"$C",0,210);
             //on libère la ram
             a= "";b=a;c=b;d=c;
         } else if (strTemps.startsWith(F("T:"))){
@@ -882,9 +882,9 @@ void getTemperatures() {    //fonction affichage des température
               myGLCD.setColor(BLACK);
               myGLCD.fillRect(0,190,120,219);
               myGLCD.setColor(RED);
-              myGLCD.print("Lit "+b+"~C",0,195);
+              myGLCD.print("Lit "+b+"$C",0,195);
               myGLCD.setColor(BLUE);
-              myGLCD.print("Buse "+a+"~C",0,210);
+              myGLCD.print("Buse "+a+"$C",0,210);
               //on libère la ram
             a="";b=a;
             } else {
@@ -897,12 +897,12 @@ void getTemperatures() {    //fonction affichage des température
               myGLCD.setColor(BLACK);
               myGLCD.fillRect(0,190,120,219);
               myGLCD.setColor(BLUE);
-              myGLCD.print("Buse "+a+"~C"+" W "+b,0,210);
+              myGLCD.print("Buse "+a+"$C"+" W "+b,0,210);
               //on libère la ram
               a="";b=a;
             }
         }
-        strTemps = SERIAL_P.read();strTemps = ""; //on vide le buffer serie et on libere de la ram
+        strTemps = ""; //on vide le buffer serie et on libere de la ram
      }
   }
 }
@@ -945,7 +945,7 @@ void getPrintState(){ //affiche le pourcentage, le temps estimé de l'impression
       unsigned long endByte = d.toInt();
 
       //strPbytes =""; //on libère le string de la sram
-      SERIAL_P.read();  //vide le buffer
+      //SERIAL_P.read();  //vide le buffer
       
       SERIAL_P.println(code(9)); //demande le temps écoulé
       while (SERIAL_P.available()==0) { }
@@ -960,7 +960,7 @@ void getPrintState(){ //affiche le pourcentage, le temps estimé de l'impression
           unsigned int Tsec = b.toInt();
     
           strTimes =""; //on libere la sram
-          SERIAL_P.read(); //vide le buffer
+          //SERIAL_P.read(); //vide le buffer
 
           //calcul et affichage des données de temps
           float Ppercent = ((((float)stByte/(float)endByte)*100.0)+0.5);  //calcul pourcentage impression pour bar 
