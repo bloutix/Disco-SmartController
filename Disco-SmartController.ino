@@ -714,35 +714,35 @@ void InitTouchInterface(){  //variables et fonctions de l'interface tactile
      sendGcode(code(27));
    } else if(UB.Touch()) {    //deplacer plateau vers arriere
      sendGcode(code(31));
-     sendGcode(code(23)+strMvc+code(32));
+     sendGcode(code(23)+strMvc); //for speed add +code(32)
      sendGcode(code(30));
    } else if(DB.Touch()) {    //deplacer plateau vers avant
      sendGcode(code(31));
-     sendGcode(code(22)+strMvc+code(32));
+     sendGcode(code(22)+strMvc); //for speed add +code(32)
      sendGcode(code(30));
    } else if(LB.Touch()) {    //deplacer buse vers la gauche
      sendGcode(code(31));
-     sendGcode(code(19)+strMvc+code(32));
+     sendGcode(code(19)+strMvc); //for speed add +code(32)
      sendGcode(code(30));
    } else if(RB.Touch()) {    //deplacer buse vers la droite
      sendGcode(code(31));
-     sendGcode(code(20)+strMvc+code(32));
+     sendGcode(code(20)+strMvc); //for speed add +code(32)
      sendGcode(code(30));
    } else if(UZ.Touch()) {    //monter buse
      sendGcode(code(31));
-     sendGcode(code(26)+strMvc+code(32));
+     sendGcode(code(26)+strMvc); //for speed add +code(32)
      sendGcode(code(30));
    } else if(DZ.Touch()) {    //descendre buse
      sendGcode(code(31));
-     sendGcode(code(25)+strMvc+code(32));
+     sendGcode(code(25)+strMvc); //for speed add +code(32)
      sendGcode(code(30));     
    } else if(Eext.Touch()) {  //extrusion filament
      sendGcode(code(31));
-     sendGcode(code(29)+strMvc+code(33));
+     sendGcode(code(29)+strMvc); //for speed add +code(33)
      sendGcode(code(30));  
    } else if(Rext.Touch()){   //retracter filament
      sendGcode(code(31));
-     sendGcode(code(28)+strMvc+code(33));
+     sendGcode(code(28)+strMvc); //for speed add +code(33)
      sendGcode(code(30));  
    } else if (Bsd.Touch()) {  // lister les fichiers sur la carte sd
       myGLCD.setColor(BLACK);
