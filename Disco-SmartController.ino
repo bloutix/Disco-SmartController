@@ -551,24 +551,27 @@ void disp_SD(){   //affichage de la liste des fichiers sur la carte sd
     myGLCD.setColor(WHITE);
     myGLCD.print(file[i],50,(i*20)+40);
   }
+  selected = 0;
   loaded =true;
   }
   if(DNB.Touch()){
+    if(selected<file_cnt-1){
     myGLCD.setColor(GREY);
     myGLCD.drawRect(45,(selected*20)+38,190,(selected*20)+52);
     selected++;
-    if(selected>file_cnt-1){selected=file_cnt-1;}
     myGLCD.setColor(GREEN);
     myGLCD.drawRect(45,(selected*20)+38,190,(selected*20)+52);
     delay(50);
+    }
   }else if(UPB.Touch()) {
+    if(selected>0){
     myGLCD.setColor(GREY);
     myGLCD.drawRect(45,(selected*20)+38,190,(selected*20)+52);
     selected--;
-    if(selected<0){selected=0;}
     myGLCD.setColor(GREEN);
     myGLCD.drawRect(45,(selected*20)+38,190,(selected*20)+52);
     delay(50);
+    }
   }else if(SDPTB.Touch()){
     file[selected].toLowerCase();
     SERIAL_P.println(code(2)+file[selected]);
