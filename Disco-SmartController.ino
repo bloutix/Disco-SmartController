@@ -799,16 +799,16 @@ void PSdFilelist(){ //initialisation et liste les fichier de la carte sd
      myGLCD.fillRoundRect(20,30,300,210);
       
      //SERIAL_P.read(); //on vide serial buffer
-     SERIAL_P.println(code(1));
+     SERIAL_P.println(code(1));   //initialise la SD
      //SERIAL_P.read(); //on vide serial buffer
-     SERIAL_P.println(code(0));
+     SERIAL_P.println(code(0));   //demande la liste des fichier
      while (SERIAL_P.available()==0) { }
      while (SERIAL_P.available()>0){
-        delay(10);
+        //delay(10);
         filename = SERIAL_P.readStringUntil('\n');
         if (filename != F("End file list") && startsd==true) {  
           int cnt_sdf= (addr[1]<<3)>>3;
-          if(file_cnt < cnt_sdf){ //if is GCODE file //(filename.endsWith(".G") || filename.endsWith(".g")) && 
+          if(file_cnt < cnt_sdf && (filename.endsWith(".G") || filename.endsWith(".g"))){ //if is GCODE file //(filename.endsWith(".G") || filename.endsWith(".g")) && 
              file[file_cnt] = filename;
              file_cnt++;
            }
