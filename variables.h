@@ -34,6 +34,7 @@ UTFT_SPIflash myFiles(&myGLCD,&myFlash);
 // Not touch is for TFT_extensionV2 button lib
 Base B(&myGLCD,&myTouch); // Base class, NEEDED!!!
 
+//keyboard
 MobileKeyboard myKB(&B);
 
 //initialize slider

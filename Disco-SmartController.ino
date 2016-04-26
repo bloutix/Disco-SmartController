@@ -42,7 +42,6 @@
 /*#include <Servo.h>
 Servo Zservo;*/
 //bool zstate = false;
-bool Pcon=true;
 void setup(){ 
     //Dont Touch this
   for(int i=0;i<8;i++){  //it take config from EEPROM
@@ -74,15 +73,6 @@ void setup(){
   SETB.Colors(GREEN,WHITE,NOFILL,SQUARED);
   BACK.Coords(0,220,20,239);
   BACK.Colors(GREEN,BLACK,NOFILL,SQUARED);
-  /*   SERIAL_P.write("?");
-   while (SERIAL_P.available()==0 && millis()<3000) {
-    myGLCD.setColor(WHITE);
-    myGLCD.print(F("Test de connexion"),CENTER,110);
-  }
-  if (SERIAL_P.available()>0){
-    SERIAL_P.read();
-    Pcon =true;
-  }*/
   myGLCD.fillScr(BLACK);
 }
 
@@ -111,8 +101,8 @@ void loop() {
     break;
   }
 }  
-void serialEvent(){
-  if(!autoUSB && Pcon){
+/*void serialEvent(){
+  if(!autoUSB){
     loaded = false;
     myGLCD.setColor(BLACK);
     myGLCD.fillRect(0,10,319,239);
@@ -122,16 +112,16 @@ void serialEvent(){
 }
 /*void serialEvent1(){
     chkServo();
-}*/
+}
 void serialEvent2(){
- if(!autoBT && bitRead(addr[0],1) && Pcon){
+ if(!autoBT && bitRead(addr[0],1)){
     loaded = false;
     myGLCD.setColor(BLACK);
     myGLCD.fillRect(0,10,319,239);
     autoBT = true;
     disp_pg=2;
  }
-}
+}*/
 //PAGES d'affichage
 void disp_Mcode(){    //afichage du clavier pour envoie de ligne de commande
   if (loaded == false) {
@@ -146,7 +136,7 @@ void disp_Mcode(){    //afichage du clavier pour envoie de ligne de commande
     loaded = true;
   }
   char buf[30] = {'\0'};
-  //myKB.ReceiveMsg(0, 0, YELLOW); // X,Y(position on screen), Color
+  myKB.ReceiveMsg(20, 225, WHITE); // X,Y(position on screen), Color
   if (myKB.Mobile_KeyBoard(buf, BLUE))
   {
     setStateDisplay(buf);
@@ -172,38 +162,35 @@ void disp_HOM(){  //affichage de l'écran d'accueil
   myGLCD.setBackColor(BLACK);
   myGLCD.setColor(CYAN);
   myGLCD.print(str(1),CENTER,0);
-  if (Pcon){
-    myGLCD.setColor(CYAN);
-    myGLCD.print(str(2),CENTER,225);
-  } else {
-     myGLCD.setColor(RED);
-     myGLCD.print(str(3),CENTER,225);
-  }
+  myGLCD.setColor(CYAN);
+  myGLCD.print(str(2),CENTER,225);
   BTB.ReDraw();
   TCHB.ReDraw();
   USBB.ReDraw();
   SETB.ReDraw();
-  myFiles.loadBitmap(4,160,45);
-  myFiles.loadBitmap(6,90,130);
-  myFiles.loadBitmap(7,90,60);
-  myFiles.loadBitmap(8,20,130);
-  myFiles.loadBitmap(9,20,60);
+  myFiles.loadBitmap(4,160,45); //logo dagoma
+  myFiles.loadBitmap(6,90,130); //logo setting
+  myFiles.loadBitmap(7,90,60);  //logo usb
+  if(bitRead(addr[0],1)){
+     myFiles.loadBitmap(8,20,130); //logo bluetooth
+  }
+  myFiles.loadBitmap(9,20,60);  //logo touchinterface
   loaded = true;
   }
 
-  if (TCHB.Touch() && Pcon){
+  if (TCHB.Touch()){
     loaded = false;
     myGLCD.setColor(BLACK);
     myGLCD.fillRect(0,10,319,239);
     disp_pg = 1;
-  } else if(BTB.Touch() && bitRead(addr[0],1) && Pcon){
+  } else if(BTB.Touch() && bitRead(addr[0],1)){
     if(bitRead(addr[0],1)){
       loaded = false;
       myGLCD.setColor(BLACK);
       myGLCD.fillRect(0,10,319,239);
       disp_pg = 2;
     }
-  } else if(USBB.Touch() && Pcon){
+  } else if(USBB.Touch()){
     loaded = false;
     myGLCD.setColor(BLACK);
     myGLCD.fillRect(0,10,319,239);
@@ -593,7 +580,16 @@ void disp_SD(){   //affichage de la liste des fichiers sur la carte sd
     loaded = false;
   }
 }
-
+void disp_PopUp(byte i){ //pop up de reglage
+  switch (i){
+    case 0:     //hotend
+    break;
+    case 1:     //heatbed
+    break;
+    case 2:     //MV speed
+    break;
+  }
+}
 /*Fonctions principales*/
 /*void chkServo(){
    if (SERIAL_P.readStringUntil('\n')== F("zservo")){
@@ -692,13 +688,15 @@ void sendGcode(String lineOfCode){    //envoie de Gcode avec attente de msg OK
 
 //fonctions affichage et controle
 void InitTouchInterface(){  //variables et fonctions de l'interface tactile
-    unsigned int Mvslide = moveS.Touch();
-    unsigned int Tbslide = tempB.Touch();
+    unsigned int Mvslide = moveS.Touch();   
     unsigned int Thslide = tempH.Touch();
+ if(bitRead(addr[0],1)){
+      unsigned int Tbslide = tempB.Touch(); 
   if(lastTb != Tbslide && tempB.Touch()) {
     setBedTemp(Tbslide);
     lastTb = Tbslide;
   }
+ }
   if(lastHb != Thslide && tempH.Touch()) {
     setHdTemp(Thslide);
     lastHb = Thslide;
@@ -791,7 +789,6 @@ void InitTouchInterface(){  //variables et fonctions de l'interface tactile
       myGLCD.setColor(BLACK);
       myGLCD.fillRect(0,10,319,239);
       disp_pg = 6;
-      //myKB.SetupMobileKB(0, 0, 300, 230); //NEEDED TO WORK!
    }
 }
 void PSdFilelist(){ //initialisation et liste les fichier de la carte sd
@@ -803,11 +800,12 @@ void PSdFilelist(){ //initialisation et liste les fichier de la carte sd
       
      //SERIAL_P.read(); //on vide serial buffer
      SERIAL_P.println(code(1));   //initialise la SD
+     delay(10);
      //SERIAL_P.read(); //on vide serial buffer
      SERIAL_P.println(code(0));   //demande la liste des fichier
+     delay(10);
      while (SERIAL_P.available()==0) { }
      while (SERIAL_P.available()>0){
-        //delay(10);
         filename = SERIAL_P.readStringUntil('\n');
         if (filename != F("End file list") && startsd==true) {  
           int cnt_sdf= (addr[1]<<3)>>3;
@@ -847,6 +845,7 @@ void getTemperatures() {    //fonction affichage des température
   if(waitPrinting == false){
       //SERIAL_P.read(); //on vide le buffer
       SERIAL_P.println(code(13));
+      delay(10);
       //while (SERIAL_P.available()==0) { }
      if( String strTemps = SERIAL_P.readStringUntil('\n')){
         if(strTemps.startsWith(F("ok T:"))){
@@ -922,11 +921,11 @@ String code(byte i){   //get gcode str
   strcpy_P(Mfw_buf, (char*)pgm_read_word(&(Mfw_table[i])));
   return Mfw_buf;
 }
-String str(byte i){
+String str(byte i){   //this read language string
   strcpy_P(str_buf, (char*)pgm_read_word(&(strFR_table[i])));
   return str_buf;
 }
-char* strc(byte i){
+char* strc(byte i){   //this read fw code string
   strcpy_P(strc_buf, (char*)pgm_read_word(&(strFR_table[i])));
   return strc_buf;
 }
@@ -937,7 +936,7 @@ void getPrintState(){ //affiche le pourcentage, le temps estimé de l'impression
   if(isSDPrinting == true){
   SERIAL_P.println(code(6)); //demande le numéro de "ligne" en cours
     while (SERIAL_P.available()==0) { }
-  if( String strPbytes = SERIAL_P.readString()){
+  if( String strPbytes = SERIAL_P.readStringUntil('\n')){
     if(strPbytes.startsWith(F("SD printing byte")) && !strPbytes.startsWith(F("SD printing byte 0/0"))){
        String c = strPbytes.substring(strPbytes.indexOf(F("byte"))+5, strPbytes.indexOf(F("/")));
             c.trim();
@@ -952,7 +951,7 @@ void getPrintState(){ //affiche le pourcentage, le temps estimé de l'impression
       
       SERIAL_P.println(code(9)); //demande le temps écoulé
       while (SERIAL_P.available()==0) { }
-      if( String strTimes = SERIAL_P.readString()){
+      if( String strTimes = SERIAL_P.readStringUntil('\n')){
         if(strTimes.startsWith(F("echo:"))){
           String a = strTimes.substring(strTimes.indexOf(F("echo:"))+5, strTimes.indexOf(F(" min")));
                 a.trim();
@@ -1058,7 +1057,7 @@ void updispval(unsigned int val, int x, int y, byte nset){   //affichage des val
 
   }
 }
-void resConf(){
+void resConf(){   //this resume setting before applying in setup page
   byte sdfimx = addr[1]<<3;
 
   myGLCD.setColor(WHITE);
@@ -1128,7 +1127,7 @@ void updTemp(int Tn,bool ud){
         myGLCD.setColor(WHITE);
         myGLCD.printNumI(addr[Tn+2]*mult,x,y);
 }
-void rstBtn(byte pg){   //reset btn  for saving SRAM
+void rstBtn(byte pg){   //reset btn  for saving SRAM display for setting page
   switch(pg){
     case 0:
       SDPTB.Text(strc(19),BLUE,Small);SDPTB.ReDraw();
